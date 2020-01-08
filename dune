@@ -1,0 +1,4 @@
+(executable
+ (name test_re)
+ (libraries regenerate qcheck qcheck-alcotest alcotest)
+ (ocamlopt_flags :standard -O3 -inlining-report))

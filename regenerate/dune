@@ -1,0 +1,3 @@
+(library
+  (name regenerate)
+  (libraries containers containers.iter oseq fmt sequence qcheck))
