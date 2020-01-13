@@ -41,7 +41,7 @@ module type RegularExpression = sig
   (** [charset set] is a constructor and returns [CharSet set]. *)
   val charset : CSet.t -> regex
 
-  (** [concat r1 r2] is a constructor and returns [Concatenation (r1, r2)]. *)
+  (** [concat r1 r2] is a regular expression for the concatenation of [r1] and [r2]. *)
   val concat  : regex -> regex -> regex
 
   (** [union r1 r2] is a constructor and returns [Union (r1, r2)]. *)
@@ -79,7 +79,7 @@ module type RegularExpression = sig
          "[^a-z]" represents all the ascii characters except for the lower case letters.
       - "[^c1c2...cn]" represents all the ascii characters except for c1, c2, ..., cn. For example, "[^/*]" represents
          all the ascii characters except for the two characters '/' and '*'.
-      - Inside "[]" we don't escape the special characters except for ']' (but if you want to type '\' you still need to write "[\\]").
+      - Inside "[]" we don't escape the special characters except for ']', for example, we have to write "[\\]]" to get ']'.
    *)
   val regex_from_string : string -> regex
 
@@ -189,6 +189,7 @@ module RE : RegularExpression = struct
          |> char_set r
 
       | '\\' :: (']' as c) :: r
+      | '\\' :: ('\\' as c) :: r
       | c :: r ->
          CSet.add c acc
          |> char_set r
