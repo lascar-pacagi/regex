@@ -235,47 +235,60 @@ module RE : RegularExpression = struct
     let rec print_range_list ppf = function
       | [] ->
          ()
-
       | (a, b) :: r ->
          (if a = b then
-            fprintf ppf "'%s'@,%s%a" (char_to_string_escaped a)
+            fprintf ppf "%s%a" (char_to_string_escaped a)
           else
-            fprintf ppf "['%s'-'%s']@,%s%a"
+            fprintf ppf "[%s-%s]%a"
               (char_to_string_escaped a)
               (char_to_string_escaped b))
-           (if r = [] then "" else " ")
            print_range_list r
     in
-    let rec print_regexp ppf = function
-      | CharSet set ->
-         fprintf ppf "@[<1>CharSet(%a)@]"
-           print_range_list (range_from_cset set)
+    let rec print_alternative ppf = function
+      | Union(re1, re2) ->
+         fprintf ppf "%a\xe2\x94\x82%a"
+           print_alternative re1
+           print_alternative re2
+      | re ->
+         print_concatenation ppf re
 
+    and print_concatenation ppf = function
       | Concatenation (re1, re2) ->
-         fprintf ppf "@[<1>Concatenation (%a,@ %a)@]"
-           print_regexp re1
-           print_regexp re2
+         fprintf ppf "%a%a"
+           print_concatenation re1
+           print_concatenation re2
+      | re ->
+         print_unary_operators ppf re
 
-      | Union (re1, re2) ->
-         fprintf ppf "@[<1>Union (%a,@ %a)@]"
-           print_regexp re1
-           print_regexp re2
-
+    and print_unary_operators ppf = function
       | ZeroOrOne re ->
-         fprintf ppf "@[<1>ZeroOrOne (%a)@]"
-           print_regexp re
+         fprintf ppf "%a\xef\xbc\x9f"
+           print_unary_operators re
 
       | ZeroOrMore re ->
-         fprintf ppf "@[<1>ZeroOrMore(%a)@]"
-           print_regexp re
+         fprintf ppf "%a\xe2\xad\x91"
+           print_unary_operators re
 
       | OneOrMore re ->
-         fprintf ppf "@[<1>OneOrMore (%a)@]"
-           print_regexp re
+         fprintf ppf "%a\xe2\x81\xba"
+           print_unary_operators re
+
+      | re ->
+         print_basics ppf re
+
+    and print_basics ppf = function
+      | CharSet set ->
+         fprintf ppf "%a"
+           print_range_list (range_from_cset set)
+
+      | re ->
+         fprintf ppf "\xe2\x9f\xae%a\xe2\x9f\xaf"
+           print_regex re
+    and print_regex ppf re =
+      print_alternative ppf re
     in
     fprintf ppf "%a@."
-      print_regexp re
-
+      print_regex re
 end
 
 module type Matching = sig
