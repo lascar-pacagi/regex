@@ -38,22 +38,22 @@ module type RegularExpression = sig
     | ZeroOrMore of regex            (** [ZeroOrMore r] represents the regex ( r* ). *)
     | OneOrMore of regex             (** [OneOrMore r] represents the regex ( rr* ). *)
 
-  (** [charset set] is a constructor and returns [CharSet set]. *)
+  (** [charset set] is a regular expression for the set of characters [set]. *)
   val charset : CSet.t -> regex
 
   (** [concat r1 r2] is a regular expression for the concatenation of [r1] and [r2]. *)
   val concat  : regex -> regex -> regex
 
-  (** [union r1 r2] is a constructor and returns [Union (r1, r2)]. *)
+  (** [union r1 r2] is a regular expression for the union of [r1] and [r2]. *)
   val union   : regex -> regex -> regex
 
-  (** [zero_or_one r] is a constructor and returns [ZeroOrOne r]. *)
+  (** [zero_or_one r] is a regular expression for zero or one [r]. *)
   val zero_or_one  : regex -> regex
 
-  (** [zero_or_more r] is a constructor and returns [ZeroOrMore r]. *)
+  (** [zero_or_more r] is a regular expression for zero or more [r]. *)
   val zero_or_more : regex -> regex
 
-  (** [one_or_more r] is a constructor and returns [OneOrMore r]. *)
+  (** [one_or_more r] is a regular expression for at least one [r]. *)
   val one_or_more  : regex -> regex
 
   (** [regex_from_string s] returns a [regex] that represents the regular expression [s].
