@@ -329,8 +329,12 @@ module Backtracking : Matching = struct
          full_match t l k
          || k l
 
+      (* | ZeroOrMore t1 ->
+       *    full_match t1 l (fun l' -> l <> l' && full_match t l' k)
+       *    || k l *)
+
       | ZeroOrMore t1 ->
-         full_match t1 l (fun l' -> l <> l' && full_match t l' k)
+         full_match (OneOrMore t1) l k
          || k l
 
       | OneOrMore t1 ->
