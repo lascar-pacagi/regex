@@ -326,15 +326,11 @@ module Backtracking : Matching = struct
          || full_match t2 l k
 
       | ZeroOrOne t ->
-         full_match t l k
-         || k l
-
-      (* | ZeroOrMore t1 ->
-       *    full_match t1 l (fun l' -> l <> l' && full_match t l' k)
-       *    || k l *)
+         k l
+         || full_match t l k
 
       | ZeroOrMore t1 ->
-         full_match (OneOrMore t1) l k
+         full_match t1 l (fun l' -> l <> l' && full_match t l' k)
          || k l
 
       | OneOrMore t1 ->
@@ -354,7 +350,7 @@ module NFA : Matching = struct
     | CharSet of CSet.t * t
     | Match
 
-  let make_t =
+  let make_t : state -> t =
     let counter = ref 1 in
     (fun s ->
       if s = Match then
